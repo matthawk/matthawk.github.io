@@ -1,0 +1,209 @@
+<html>
+<head>
+    <link href="https://fonts.googleapis.com/css?family=Playfair+Display|Source+Sans+Pro&amp;subset=latin-ext" rel="stylesheet">
+    <style>
+        .grid {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: flex-start;
+            align-content: flex-start;
+        }
+        .card {
+            flex: 0 0 auto;
+        }
+        .card-outer {
+            padding: 5px;
+        }
+        .card-inner {
+            position: relative;
+            display: inline-block;
+            width: 285px;
+            height: 400px;
+            border: white;
+            border-width: 4pt;
+            border-radius: 10px;
+            border-color: white;
+            box-shadow: 0 0 75px black inset;
+        }
+        .card-players {
+            position: absolute;
+            left: 0;
+            top: 0;
+            font-family: 'Source Sans Pro', sans-serif;
+            font-weight: bold;
+            color: white;
+            text-align: center;
+            background-color: rgba(205,83,96,0.75);
+            border-top-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+            padding-left: 7px;
+            padding-right: 7px;
+            padding-bottom: 7px;
+        }
+        .pmin {
+            display: block;
+            font-size: 2em;
+        }
+        .pto {
+            display: block;
+            font-size: 0.75em;
+            text-transform: uppercase;
+        }
+        .pmax {
+            display: block;
+            font-size: 2em;
+        }
+        .pplayers {
+            display: block;
+            font-size: 0.75em;
+            text-transform: uppercase;
+        }
+        .card-time {
+            position: absolute;
+            right: 0;
+            top: 0;
+            font-family: 'Source Sans Pro', sans-serif;
+            font-weight: bold;
+            color: white;
+            text-align: center;
+            background-color: rgba(67,132,150,0.75);
+            border-bottom-left-radius: 10px;
+            border-top-right-radius: 10px;
+            padding-left: 7px;
+            padding-right: 7px;
+            padding-bottom: 7px;
+        }
+        .tmin {
+            display: block;
+            font-size: 2em;
+        }
+        .tto {
+            display: block;
+            font-size: 0.75em;
+            text-transform: uppercase;
+        }
+        .tmax {
+            display: block;
+            font-size: 2em;
+        }
+        .tminutes {
+            display: block;
+            font-size: 0.75em;
+            text-transform: uppercase;
+        }
+        .card-text {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            color: white;
+            background-color: rgba(40,109,168,0.75);
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+            padding-top: 5px;
+            padding-left: 10px;
+            padding-right: 10px;
+            padding-bottom: 10px;
+        }
+        .title {
+            display: block;
+            font-size: 1.5em;
+            font-weight: bold;
+            font-family: 'Playfair Display', serif;
+        }
+        .desc {
+            display: block;
+            font-size: 0.8em;
+            font-family: 'Source Sans Pro', sans-serif;
+            margin-bottom: 5px;
+        }
+        .icons {
+            width: 265px;
+            max-height: 76px;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            align-items: flex-start;
+            align-content: flex-start;
+        }
+        .category, .mechanic {
+            flex: 0 0 37.85px;
+            height: 37.85px;
+        }
+    </style>
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/arrive.min.js"></script>
+    <script src="./js/clamp.js"></script>
+    <script src="./js/handlebars.js"></script>
+    <script>
+        $(document).arrive("span.desc.clamp", function() {
+            $clamp($(this).get(0), {clamp: 3});
+        });
+    </script>
+    <script id="card-template" type="text/x-handlebars-template">
+        {{#each games}}
+        <div class="card">
+            <div class="card-outer">
+                <!-- Safe Zone Begins -->
+                <div class="card-inner" style="background: url(./img/{{imagefile}}) center top / cover no-repeat border-box border-box">
+                    <div class="card-text">
+                        <span class="title">{{name}}</span>
+                        <span class="desc clamp">
+                            {{desc}}
+                        </span>
+                        <span class="icons">
+                            {{#if categoriesidlist}}
+                            {{{categoriesidlist}}}
+                            {{/if}}
+                            {{#if mechanicsidlist}}
+                            {{{mechanicsidlist}}}
+                            {{/if}}
+                        </span>
+                    </div>
+                    <div class="card-players">
+                        {{#if plmin}}
+                        <span class="pmin">{{plmin}}</span>
+                        {{/if}}
+                        {{#if plto}}
+                        <span class="pto">{{plto}}</span>
+                        {{/if}}
+                        <span class="pmax">{{plmax}}</span>
+                        <span class="pplayers">{{pl}}</span>
+                    </div>
+                    <div class="card-time">
+                        {{#if tmin}}
+                        <span class="tmin">{{tmin}}</span>
+                        {{/if}}
+                        {{#if tto}}
+                        <span class="tto">{{tto}}</span>
+                        {{/if}}
+                        <span class="tmax">{{tmax}}</span>
+                        <span class="tminutes">minutes</span>
+                    </div>
+                </div>
+                <!-- Safe Zone Ends -->
+            </div>
+        </div>
+        {{/each}}
+    </script>
+</head>
+<body>
+    <div class="outer">
+        <div class="filter">
+            
+        </div>
+        <div class="grid">
+        </div>
+    </div>
+    <script>
+        $.getJSON('./games2.json', function(obj) {
+            var theTemplateScript = $("#card-template").html();
+            var theTemplate = Handlebars.compile(theTemplateScript);
+            $('.grid').append(theTemplate(obj));
+        });
+    </script>
+</body>
+</html>
